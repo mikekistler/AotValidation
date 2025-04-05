@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -10,6 +11,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddValidation();
 
 var app = builder.Build();
 
@@ -39,7 +42,16 @@ todosApi.MapGet("/{id}", Results<Ok<Todo>, NotFound> (int id) =>
 
 app.Run();
 
-public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
+public record Todo(
+    int Id,
+
+    [property: MaxLength(100)]
+    string? Title,
+
+    DateOnly? DueBy = null,
+
+    bool IsComplete = false
+);
 
 [JsonSerializable(typeof(Todo[]))]
 internal partial class AppJsonSerializerContext : JsonSerializerContext
